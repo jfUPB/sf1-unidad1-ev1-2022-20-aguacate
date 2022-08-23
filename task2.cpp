@@ -4,7 +4,7 @@
 
 void task2()
 {
-    enum class TaskState
+    /*enum class TaskState
     {
         INIT,
         WAIT_PRESS,
@@ -15,36 +15,29 @@ void task2()
     static uint8_t lastButtonPressed;
     static uint32_t initStableTime;
 
-    const uint8_t UP_BTN_PIN = 13;
-    const uint8_t DOWN_BTN_PIN = 32;
-    const uint8_t ARM_BTN_PIN = 33;
+    const uint8_t BTN_1_PIN = 33;
+    const uint8_t BTN_2_PIN = 13;
     const uint32_t STABLE_TIME = 100;
 
     switch (taskState)
     {
     case TaskState::INIT:
     {
-        pinMode(UP_BTN_PIN, INPUT_PULLUP);
-        pinMode(DOWN_BTN_PIN, INPUT_PULLUP);
-        pinMode(ARM_BTN_PIN, INPUT_PULLUP);
+        pinMode(BTN_1_PIN, INPUT_PULLUP);
+        pinMode(BTN_2_PIN, INPUT_PULLUP);
 
         taskState = TaskState::WAIT_PRESS; 
         break;
     }
     case TaskState::WAIT_PRESS:
     {
-        if(digitalRead(UP_BTN_PIN) == LOW){
-            lastButtonPressed = UP_BTN_PIN;
+        if(digitalRead(BTN_2_PIN) == LOW){
+            lastButtonPressed = BTN_2_PIN;
             initStableTime = millis();
             taskState = TaskState::WAIT_STABLE;
         }
-        if(digitalRead(DOWN_BTN_PIN) == LOW){
-            lastButtonPressed = DOWN_BTN_PIN;
-            initStableTime = millis();
-            taskState = TaskState::WAIT_STABLE;
-        }
-        if(digitalRead(ARM_BTN_PIN) == LOW){
-            lastButtonPressed = ARM_BTN_PIN;
+        if(digitalRead(BTN_1_PIN) == LOW){
+            lastButtonPressed = BTN_1_PIN;
             initStableTime = millis();
             taskState = TaskState::WAIT_STABLE;
         }
@@ -56,9 +49,8 @@ void task2()
             taskState = TaskState::WAIT_PRESS;
         }
         else if ( (millis() - initStableTime) > STABLE_TIME){
-            if(lastButtonPressed == UP_BTN_PIN) buttonEvt.whichButton = BUTTONS::UP_BTN;
-            else if(lastButtonPressed == DOWN_BTN_PIN) buttonEvt.whichButton = BUTTONS::DOWN_BTN;
-            else if(lastButtonPressed == ARM_BTN_PIN) buttonEvt.whichButton = BUTTONS::ARM_BTN;
+            if(lastButtonPressed == BTN_1_PIN) buttonEvt.whichButton = BUTTONS::BTN_1;
+            else if(lastButtonPressed == BTN_2_PIN) buttonEvt.whichButton = BUTTONS::BTN_2;
             buttonEvt.trigger = true;
             //printf("Button pressed: %d\n", lastButtonPressed);
             taskState = TaskState::WAIT_RELEASE;
@@ -75,5 +67,5 @@ void task2()
     default:
     {
     }
-    }
+    }*/
 }

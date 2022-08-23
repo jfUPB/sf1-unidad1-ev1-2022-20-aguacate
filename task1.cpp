@@ -4,13 +4,19 @@
 
 void task1()
 {
-    enum class TaskState
+    /*enum class TaskState
     {
         INIT,
         WAIT_COMMANDS
     };
     static TaskState taskState = TaskState::INIT;
+    static uint8_t lastButtonPressed;
+    static uint32_t initStableTime;
 
+    const uint8_t BTN_1_PIN = 33;
+    const uint8_t BTN_2_PIN = 13;
+    const uint8_t LED_PIN = 21;
+    const uint32_t STABLE_TIME = 100;
     switch (taskState)
     {
     case TaskState::INIT:
@@ -21,32 +27,10 @@ void task1()
     }
     case TaskState::WAIT_COMMANDS:
     {
-        if (Serial.available() > 0)
-        {
-            int dataRx = Serial.read();
-            if (dataRx == 'u')
-            {
-                Serial.print("UP BTN\n");
-                buttonEvt.trigger = true;
-                buttonEvt.whichButton = BUTTONS::UP_BTN;
-            }
-            if (dataRx == 'd')
-            {
-                Serial.print("DOWN BTN\n");
-                buttonEvt.trigger = true;
-                buttonEvt.whichButton = BUTTONS::DOWN_BTN;
-            }
-            if (dataRx == 'a')
-            {
-                Serial.print("ARMED BTN\n");
-                buttonEvt.trigger = true;
-                buttonEvt.whichButton = BUTTONS::ARM_BTN;
-            }
-        }
-        break;
+        
     }
     default:
     {
     }
-    }
+    }*/
 }
