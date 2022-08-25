@@ -33,4 +33,57 @@ void task1()
     {
     }
     }*/
+    
+    /*case TaskStates::RAPIDO:
+    {
+
+        uint32_t timeNow = millis();
+
+        if ((timeNow - initBombTimer) > BOMBINTERVAL)
+        {
+            initBombTimer = timeNow;
+            bombCounter--;
+            Serial.print("Counter: ");
+            Serial.print(bombCounter);
+            Serial.print("\n");
+            if (bombCounter == 0)
+            {
+                ledBombCountingState = HIGH;
+                Serial.print("BOMB BOOM\n");
+                digitalWrite(HIGH);
+                delay(2000);
+                digitalWrite(LOW);
+                digitalWrite(ledBombCountingState);
+                bombCounter = 20;
+                taskState = TaskStates::WAIT_CONFIG;
+            }
+        }
+        if ((timeNow - initLedCounterTimer) > LEDCOUNTERINTERVAL)
+        {
+            initLedCounterTimer = timeNow;
+            ledBombCountingState = !ledBombCountingState;
+            digitalWrite(ledBombCountingState);
+        }
+
+        if (buttonEvt.trigger == true)
+        {
+            buttonEvt.trigger = false;
+            disarmKey[keyCounter] = buttonEvt.whichButton;
+            keyCounter++;
+            if (keyCounter == 7)
+            {
+                keyCounter = 0;
+                if (compareKeys(secret, disarmKey) == true)
+                {
+                    ledBombCountingState = HIGH;
+                    digitalWrite(ledBombCountingState);
+                    Serial.print("BOMB DISARM\n");
+                    bombCounter = 20;
+                    taskState = TaskStates::WAIT_CONFIG;
+                }
+            }
+        }
+
+        break;
+    }*/
 }

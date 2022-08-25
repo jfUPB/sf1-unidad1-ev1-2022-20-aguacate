@@ -27,7 +27,9 @@ void task3()
         COUNTING,
         MID,
         FAST,
-        SLOW
+        SLOW,
+        OFF,
+        ON
     };
     static constexpr uint32_t INTERVAL_SLOW = 500;
     static constexpr uint32_t INTERVAL_MID = 250;
@@ -35,6 +37,7 @@ void task3()
     static uint32_t lasTime;
 
     static TaskStates taskState = TaskStates::INIT;
+    static TaskStates lastTask = TaskStates::INIT;
     const uint8_t led = 14;
     const uint32_t BOMBINTERVAL = 1000U;
     const uint32_t LEDCOUNTERINTERVAL = 500U;
@@ -62,41 +65,16 @@ void task3()
         lasTime = millis();
         pinMode(led, OUTPUT);
         digitalWrite(led, HIGH);
-        bombCounter = 20;
-        keyCounter = 0;
         taskState = TaskStates::SLOW;
         break;
     }
-    case TaskStates::WAIT_CONFIG:
+    /*case TaskStates::WAIT_CONFIG:
     {
+        digitalWrite(led, HIGH);
 
-        if (buttonEvt.trigger == true)
-        {
-            buttonEvt.trigger = false;
-            if (buttonEvt.whichButton == BUTTONS::BTN_1)
-            {
-                if (bombCounter < 60)
-                    bombCounter++;
-            }
-            else if (buttonEvt.whichButton == BUTTONS::BTN_2)
-            {
-                if (bombCounter > 10)
-                    bombCounter--;
-            }
-            /*else if (buttonEvt.whichButton == BUTTONS::ARM_BTN)
-            {
-                initLedCounterTimer = millis();
-                initBombTimer = millis();
-                keyCounter = 0;
-                taskState = TaskStates::COUNTING;
-         }*/
-            Serial.print("Counter: ");
-            Serial.print(bombCounter);
-            Serial.print("\n");
-        }
-
+        taskState = TaskStates::SLOW;
         break;
-    }
+    }*/
     case TaskStates::SLOW:
     {
         uint32_t currentTime = millis();
@@ -106,39 +84,93 @@ void task3()
             digitalWrite(led, ledStatus);
             ledStatus = !ledStatus;
         }
+
+        if (buttonEvt.trigger == true)
+        {
+            if (buttonEvt.whichButton == BUTTONS::BTN_1)
+            {
+                taskState = TaskStates::OFF;
+                lastTask = TaskStates::SLOW;
+            }
+            else if (buttonEvt.whichButton == BUTTONS::BTN_2)
+            {
+                taskState = TaskStates::MID;
+                lastTask = TaskStates::SLOW;
+            }
+            buttonEvt.trigger = false;
+        }
+    }
+    case TaskStates::OFF:
+    {
+        digitalWrite(led, LOW);
+
+        if (buttonEvt.trigger == true)
+        {
+            buttonEvt.trigger = false;
+            if (buttonEvt.whichButton == BUTTONS::BTN_1)
+            {
+                taskState = TaskStates::SLOW;
+                lastTask = TaskStates::OFF;
+            }
+            else if (buttonEvt.whichButton == BUTTONS::BTN_2)
+            {
+                taskState = TaskStates::FAST;
+                lastTask = TaskStates::OFF;
+            }
+        }
+
     }
     case TaskStates::MID:
     {
-    }
-    /*case TaskStates::RAPIDO:
-    {
-
-        uint32_t timeNow = millis();
-
-        if ((timeNow - initBombTimer) > BOMBINTERVAL)
+        uint32_t currentTime = millis();
+        if ((currentTime - lasTime) >= INTERVAL_MID)
         {
-            initBombTimer = timeNow;
-            bombCounter--;
-            Serial.print("Counter: ");
-            Serial.print(bombCounter);
-            Serial.print("\n");
-            if (bombCounter == 0)
+            lasTime = currentTime;
+            digitalWrite(led, ledStatus);
+            ledStatus = !ledStatus;
+        }
+        
+        if (buttonEvt.trigger == true)
+        {
+            buttonEvt.trigger = false;
+            if (buttonEvt.whichButton == BUTTONS::BTN_1)
             {
-                ledBombCountingState = HIGH;
-                Serial.print("BOMB BOOM\n");
-                digitalWrite(HIGH);
-                delay(2000);
-                digitalWrite(LOW);
-                digitalWrite(ledBombCountingState);
-                bombCounter = 20;
-                taskState = TaskStates::WAIT_CONFIG;
+                taskState = TaskStates::ON;
+            }
+            else if (buttonEvt.whichButton == BUTTONS::BTN_2)
+            {
+                taskState = TaskStates::SLOW;
             }
         }
-        if ((timeNow - initLedCounterTimer) > LEDCOUNTERINTERVAL)
+    }
+    
+    case TaskStates::ON:
+    {
+        digitalWrite(led,HIGH);
+
+        if (buttonEvt.trigger == true)
         {
-            initLedCounterTimer = timeNow;
-            ledBombCountingState = !ledBombCountingState;
-            digitalWrite(ledBombCountingState);
+            buttonEvt.trigger = false;
+            if (buttonEvt.whichButton == BUTTONS::BTN_1)
+            {
+                taskState = TaskStates::MID;
+            }
+            else if (buttonEvt.whichButton == BUTTONS::BTN_2)
+            {
+                taskState = TaskStates::FAST;
+                lastTask = TaskStates::FAST;
+            }
+        }
+    }
+
+    case TaskStates::FAST:
+    {
+        uint32_t currentTime = millis();
+        if ((currentTime - lasTime) >= INTERVAL_FAST)
+        {
+            lasTime = currentTime;
+            digitalWrite(led, ledStatus);
+            ledStatus = !ledStatus;
         }
 
         if (buttonEvt.trigger == true)
@@ -146,22 +178,18 @@ void task3()
             buttonEvt.trigger = false;
             disarmKey[keyCounter] = buttonEvt.whichButton;
             keyCounter++;
-            if (keyCounter == 7)
+            if (keyCounter == 5)
             {
                 keyCounter = 0;
                 if (compareKeys(secret, disarmKey) == true)
                 {
-                    ledBombCountingState = HIGH;
-                    digitalWrite(ledBombCountingState);
-                    Serial.print("BOMB DISARM\n");
-                    bombCounter = 20;
-                    taskState = TaskStates::WAIT_CONFIG;
+                    taskState = lastTask;
                 }
             }
         }
+        
+    }
 
-        break;
-    }*/
     default:
     {
         break;
