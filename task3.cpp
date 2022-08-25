@@ -29,10 +29,12 @@ void task3()
         FAST,
         SLOW,
         OFF,
-        ON
+        ON,
+        WAIT_CHANGE_OFF
     };
-    static constexpr uint32_t INTERVAL_SLOW = 500;
-    static constexpr uint32_t INTERVAL_MID = 250;
+
+    static constexpr uint32_t INTERVAL_SLOW = 1000;
+    static constexpr uint32_t INTERVAL_MID = 500;
     static constexpr uint32_t INTERVAL_FAST = 125;
     static uint32_t lasTime;
 
@@ -65,13 +67,7 @@ void task3()
         taskState = TaskStates::SLOW;
         break;
     }
-    /*case TaskStates::WAIT_CONFIG:
-    {
-        digitalWrite(led, HIGH);
 
-        taskState = TaskStates::SLOW;
-        break;
-    }*/
     case TaskStates::SLOW:
     {
         uint32_t currentTime = millis();
@@ -86,22 +82,29 @@ void task3()
         {
             if (buttonEvt.whichButton == BUTTONS::BTN_1)
             {
-                if (ledStatus==LOW)
-                {
-                    taskState = TaskStates::OFF;
-                }
+                taskState = TaskStates::WAIT_CHANGE_OFF;
             }
             else if (buttonEvt.whichButton == BUTTONS::BTN_2)
             {
-                if (ledStatus==LOW)
-                {
                 taskState = TaskStates::MID;
-                }
             }
+
             buttonEvt.trigger = false;
         }
         break;
     }
+    case TaskStates::WAIT_CHANGE_OFF:
+    {
+        uint32_t currentTime = millis();
+        if ((currentTime - lasTime) >= INTERVAL_SLOW)
+        {
+            taskState = TaskStates::OFF;
+        }
+
+        
+        break;
+    }
+    
     case TaskStates::OFF:
     {
         digitalWrite(led, LOW);
@@ -161,7 +164,7 @@ void task3()
             else if (buttonEvt.whichButton == BUTTONS::BTN_2)
             {
                 taskState = TaskStates::FAST;
-                lastTask = TaskStates::FAST;
+                lastTask = TaskStates::ON;
             }
         }
         break;
