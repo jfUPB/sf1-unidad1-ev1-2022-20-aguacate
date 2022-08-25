@@ -97,13 +97,16 @@ void task3()
 
     case TaskStates::OFF:
     {
-        digitalWrite(led, LOW);
 
         if (buttonEvt.trigger == true)
         {
             buttonEvt.trigger = false;
             if (buttonEvt.whichButton == BUTTONS::BTN_1)
             {
+
+                ledStatus = true;
+                digitalWrite(led, ledStatus);
+
                 taskState = TaskStates::SLOW;
             }
             else if (buttonEvt.whichButton == BUTTONS::BTN_2)
@@ -141,7 +144,6 @@ void task3()
 
     case TaskStates::ON:
     {
-        digitalWrite(led, HIGH);
 
         if (buttonEvt.trigger == true)
         {
@@ -186,13 +188,15 @@ void task3()
         break;
     }
 
-    //Espera para los cambios de Estado
+        // Espera para los cambios de Estado
 
-        case TaskStates::WAIT_CHANGE_OFF:
+    case TaskStates::WAIT_CHANGE_OFF:
     {
         uint32_t currentTime = millis();
         if ((currentTime - lasTime) >= INTERVAL_SLOW)
         {
+            digitalWrite(led, LOW);
+            ledStatus = false;
             taskState = TaskStates::OFF;
         }
         break;
@@ -203,6 +207,11 @@ void task3()
         uint32_t currentTime = millis();
         if ((currentTime - lasTime) >= INTERVAL_MID)
         {
+
+            digitalWrite(led, HIGH);
+
+            ledStatus = true;
+
             taskState = TaskStates::ON;
         }
         break;
