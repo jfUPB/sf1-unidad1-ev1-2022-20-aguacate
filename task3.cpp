@@ -23,14 +23,15 @@ void task3()
     enum class TaskStates
     {
         INIT,
-        WAIT_CONFIG,
-        COUNTING,
         MID,
         FAST,
         SLOW,
         OFF,
         ON,
-        WAIT_CHANGE_OFF
+        WAIT_CHANGE_OFF,
+        WAIT_CHANGE_MID,
+        WAIT_CHANGE_ON,
+        WAIT_CHANGE_SLOW
     };
 
     static constexpr uint32_t INTERVAL_SLOW = 1000;
@@ -86,25 +87,14 @@ void task3()
             }
             else if (buttonEvt.whichButton == BUTTONS::BTN_2)
             {
-                taskState = TaskStates::MID;
+                taskState = TaskStates::WAIT_CHANGE_MID;
             }
 
             buttonEvt.trigger = false;
         }
         break;
     }
-    case TaskStates::WAIT_CHANGE_OFF:
-    {
-        uint32_t currentTime = millis();
-        if ((currentTime - lasTime) >= INTERVAL_SLOW)
-        {
-            taskState = TaskStates::OFF;
-        }
 
-        
-        break;
-    }
-    
     case TaskStates::OFF:
     {
         digitalWrite(led, LOW);
@@ -115,12 +105,11 @@ void task3()
             if (buttonEvt.whichButton == BUTTONS::BTN_1)
             {
                 taskState = TaskStates::SLOW;
-                lastTask = TaskStates::OFF;
             }
             else if (buttonEvt.whichButton == BUTTONS::BTN_2)
             {
                 taskState = TaskStates::FAST;
-                lastTask = TaskStates::OFF;
+                lastTask = TaskStates::WAIT_CHANGE_OFF;
             }
         }
         break;
@@ -140,11 +129,11 @@ void task3()
             buttonEvt.trigger = false;
             if (buttonEvt.whichButton == BUTTONS::BTN_1)
             {
-                taskState = TaskStates::ON;
+                taskState = TaskStates::WAIT_CHANGE_ON;
             }
             else if (buttonEvt.whichButton == BUTTONS::BTN_2)
             {
-                taskState = TaskStates::SLOW;
+                taskState = TaskStates::WAIT_CHANGE_SLOW;
             }
         }
         break;
@@ -164,7 +153,7 @@ void task3()
             else if (buttonEvt.whichButton == BUTTONS::BTN_2)
             {
                 taskState = TaskStates::FAST;
-                lastTask = TaskStates::ON;
+                lastTask = TaskStates::WAIT_CHANGE_ON;
             }
         }
         break;
@@ -197,6 +186,46 @@ void task3()
         break;
     }
 
+    //Espera para los cambios de Estado
+
+        case TaskStates::WAIT_CHANGE_OFF:
+    {
+        uint32_t currentTime = millis();
+        if ((currentTime - lasTime) >= INTERVAL_SLOW)
+        {
+            taskState = TaskStates::OFF;
+        }
+        break;
+    }
+
+    case TaskStates::WAIT_CHANGE_ON:
+    {
+        uint32_t currentTime = millis();
+        if ((currentTime - lasTime) >= INTERVAL_MID)
+        {
+            taskState = TaskStates::ON;
+        }
+        break;
+    }
+
+    case TaskStates::WAIT_CHANGE_MID:
+    {
+        uint32_t currentTime = millis();
+        if ((currentTime - lasTime) >= INTERVAL_SLOW)
+        {
+            taskState = TaskStates::MID;
+        }
+        break;
+    }
+    case TaskStates::WAIT_CHANGE_SLOW:
+    {
+        uint32_t currentTime = millis();
+        if ((currentTime - lasTime) >= INTERVAL_MID)
+        {
+            taskState = TaskStates::SLOW;
+        }
+        break;
+    }
     default:
     {
         break;
