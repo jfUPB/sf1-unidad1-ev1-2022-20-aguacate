@@ -39,10 +39,7 @@ void task3()
     static TaskStates taskState = TaskStates::INIT;
     static TaskStates lastTask = TaskStates::INIT;
     const uint8_t led = 14;
-    const uint32_t BOMBINTERVAL = 1000U;
-    const uint32_t LEDCOUNTERINTERVAL = 500U;
 
-    static uint8_t bombCounter;
     static BUTTONS secret[5] = {
         BUTTONS::BTN_1,
         BUTTONS::BTN_1,
@@ -89,16 +86,21 @@ void task3()
         {
             if (buttonEvt.whichButton == BUTTONS::BTN_1)
             {
-                taskState = TaskStates::OFF;
-                lastTask = TaskStates::SLOW;
+                if (ledStatus==LOW)
+                {
+                    taskState = TaskStates::OFF;
+                }
             }
             else if (buttonEvt.whichButton == BUTTONS::BTN_2)
             {
+                if (ledStatus==LOW)
+                {
                 taskState = TaskStates::MID;
-                lastTask = TaskStates::SLOW;
+                }
             }
             buttonEvt.trigger = false;
         }
+        break;
     }
     case TaskStates::OFF:
     {
@@ -118,7 +120,7 @@ void task3()
                 lastTask = TaskStates::OFF;
             }
         }
-
+        break;
     }
     case TaskStates::MID:
     {
@@ -129,7 +131,7 @@ void task3()
             digitalWrite(led, ledStatus);
             ledStatus = !ledStatus;
         }
-        
+
         if (buttonEvt.trigger == true)
         {
             buttonEvt.trigger = false;
@@ -142,11 +144,12 @@ void task3()
                 taskState = TaskStates::SLOW;
             }
         }
+        break;
     }
-    
+
     case TaskStates::ON:
     {
-        digitalWrite(led,HIGH);
+        digitalWrite(led, HIGH);
 
         if (buttonEvt.trigger == true)
         {
@@ -161,6 +164,7 @@ void task3()
                 lastTask = TaskStates::FAST;
             }
         }
+        break;
     }
 
     case TaskStates::FAST:
@@ -187,7 +191,7 @@ void task3()
                 }
             }
         }
-        
+        break;
     }
 
     default:
